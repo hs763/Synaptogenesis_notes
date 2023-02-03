@@ -1,0 +1,138 @@
+library(scuttle)
+library(scran)
+library(irlba)
+library(Rtsne)
+library(Matrix)
+library(ggplot2)
+library(biomaRt)
+library(viridisLite)
+library(viridis)
+library(scDblFinder)
+
+path2data   <- '/data2/ivanir/Feline2023/ParseBS/newvolume/analysis/sCell/all-well/DGE_unfiltered/'
+sample_info <- read.table('/data2/hanna/synaptogenesis/newvolume/analysis/sample_info_alt.tab',
+  sep = "\t", header = TRUE)
+  
+counts    <- t(readMM(paste0(path2data, "DGE.mtx")))
+genes     <- read.csv(paste0(path2data, "all_genes.csv"))
+metadata  <- read.csv(paste0(path2data, "cell_metadata.csv"))
+
+lib.sizes <- colSums(counts)
+ngenes    <- colSums(counts > 0)
+
+sample_bc1_well     <- rep(NA, nrow(metadata))        
+sample_number       <- rep(NA, nrow(metadata))
+sample_name_human   <- rep(NA, nrow(metadata))
+sample_name_mouse   <- rep(NA, nrow(metadata))
+
+samples <- unique(sample_info$Sample_well)
+for (i in 1:length(samples)){
+  sample_bc1_well[metadata$bc1_well %in% unlist(strsplit(samples[i],split=","))]    <- sample_info$Sample_well[i]
+  sample_number[metadata$bc1_well %in% unlist(strsplit(samples[i],split=","))]      <- sample_info$Sample_Number[i]
+  sample_name_human[metadata$bc1_well %in% unlist(strsplit(samples[i],split=","))]  <- sample_info$Sample_name_H[i]
+  sample_name_mouse[metadata$bc1_well %in% unlist(strsplit(samples[i],split=","))]  <- sample_info$Sample_name_M[i]
+}
+sample_name_human <- gsub(" ","_",sample_name_human)
+sample_name_mouse <- gsub(" ","_",sample_name_mouse)
+
+submeta_human <- data.frame(rlist::list.rbind(strsplit(sample_name_human, split="_")))
+colnames(submeta_human) <- c("batch", "day", "replicate")
+
+submeta_mouse <- data.frame(rlist::list.rbind(strsplit(sample_name_mouse, split="_")))
+colnames(submeta_mouse) <- c("batch", "day", "replicate")
+
+metadata <- data.frame(cbind(metadata, lib.sizes, sample_number, sample_bc1_well, sample_name_human, submeta_human, sample_name_mouse, submeta_mouse))
+
+counts   <- counts[,ngenes > 500 | lib.size > 1000]
+metadata <- metadata[ngenes > 500,]
+lib.sizes <- colSums(counts)
+ngenes    <- colSums(counts > 0)
+
+metadata$rate_h <- metadata$hg38_tscp_count/metadata$tscp_count
+metadata$rate_m <- metadata$mm10_tscp_count/metadata$tscp_count
+
+metadata$cell_specie <- rep(NA, nrow(metadata))
+for (i in 1:nrow(metadata)){
+  if (metadata$rate_h[i] > metadata$rate_m[i]){
+    metadata$cell_species[i] <- "h"}
+  else {metadata$cell_species[i] <- "m"
+  }
+}
+
+####mapping rate plots 
+#human mapping rates in all cells 
+ggplot(metadata, aes(x=rate_h)) + geom_histogram(color="blue, fill= "white")
+
+#human mapping rates in call cells 
+ggplot(metadata, aes(x=rate_m)) + geom_histogram(color="orange", fill= "white")
+
+subset_h <- metadata[metadata$cell_specie == "h",]
+subset_m <- metadata[metadata$cell_specie == "m",]
+
+#human mappign rates in human cells 
+ggplot(subset_h, aes(x=rate_h)) + geom_histogram(color="orange", fill= "white")
+
+#mosue mapping rates in mosue cells 
+ggplot(subset_m, aes(x=rate_m)) + geom_histogram(color="orange", fill= "white")
+
+
+metadata$rate <- rep(NA, nrow(metadata))
+for (i in 1:nrow(metadata)){
+  if (metadata$cell_species[i] == "h"){
+    metadata$rate[i] <- metadata$rate_h[i]}
+  else {metadata$rate[i] <- metadata$rate_m[i]
+  }
+}
+
+metadata$exp_d <- rep(NA, nrow(metadata))
+for (i in 1:nrow(metadata)){
+  if (metadata$cell_species[i] == "h"){
+    metadata$exp_d[i] <- metadata$exp_d_h[i]}
+  else {metadata$exp_d[i] <- metadata$exp_d_m[i]
+  }
+}
+
+#plotiing dsitribution of log(coutns) per species (Poisson distribution)
+
+pdf("dist_count_species.pdf")  
+ggplot(metadata, aes(tscp_count, fill = cell_species)) + geom_histogram(bins=30)
+dev.off()
+
+
+#barplot of lib.szies (trsc number) per time point per species
+metadata <- read.csv("Metadata.csv")
+
+pdf("trsc_persample_perspecies,pdf")
+ggplot(metadata, aes(x = exp_d, y= lib.sizes, fill = cell_species)) + geom_col() + labs(x ="Day after slicing", y= "Numer of transcript",title = "Transcript number per smaple per species") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =pretty(metadata$exp_d, n=10))
+dev.off() 
+
+#barplot of cells per timepoint
+
+pdf("cell_per_timepoint.pdf")
+ggplot(metadata) + geom_histogram(aes(x = exp_d, fill = cell_species),binwidth = 0.5, center = 0.5) + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =unique(metadata$exp_d))
+dev.off()
+
+
+
+
+
+
+
+#genes_human <- genes[genes$genome == "hg38",]
+#genes_mouse <- genes[genes$genome == "mm10",]
+#rownames(counts) <- genes$gene_id
+
+#a <- counts[genes_human$gene_id,]
+#b <- counts[genes_mouse$gene_id,]
+#lib.sizes_h <- colSums(a) 
+#lib.sizes_m <- colSums(b)
+
+
+ggplot(Metadata, aes(x=cell_specie)) + geom_density()
+
+
+ggplot(Metadata, aes(x=cell_specie)) + 
+    geom_histogram(aes(y=..density..),     
+                   binwidth=.5,
+                   colour="black", fill="white") +
+    geom_density(alpha=.2, fill="#FF6666")  
