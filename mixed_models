@@ -1,5 +1,70 @@
-cd ~/mixed_models/repo
+import numpy as np
 
-### code provided ~/mixed_models/repo/code/mcb_manica_funcs.py
+def poisson_mixture_model(data, n_components, max_iter=100, tol=1e-3):
+    """
+    Implement the EM algorithm for a Poisson mixture model.
+
+    Parameters:
+    data : numpy array
+        The data to be modeled.
+    n_components : int
+        The number of mixture components.
+    max_iter : int, optional
+        The maximum number of iterations, by default 100.
+    tol : float, optional
+        The tolerance for convergence, by default 1e-3.
+
+    Returns:
+    means : numpy array
+        The estimated means of the Poisson components.
+    weights : numpy array
+        The estimated weights of the Poisson components.
+    probs : numpy array
+        The estimated probabilities of each data point belonging to one of the Poisson distributions.
+    """
+    n_samples = data.shape[0]
+    
+    # Initialize the parameters
+    means = np.random.rand(n_components)
+    weights = np.ones(n_components) / n_components
+
+    for i in range(max_iter):
+        # E-step: compute posterior probabilities 
+        posteriorprob = np.zeros((n_samples, n_components))
+        for j in range(n_components):
+            posteriorprob[:, j] = weights[j] * np.exp(-means[j]) * np.power(means[j], data) / np.math.factorial(data)
+        posteriorprob /= np.sum(posteriorprob, axis=1)[:, np.newaxis]
+
+        # M-step: update parameters
+        weights = np.mean(posteriorprobs, axis=0)
+        means = np.sum(posteriorprob * data[:, np.newaxis], axis=0) / np.sum(posteriorprob, axis=0)
+
+        # Check for convergence
+        if np.max(np.abs(weights - weights_old)) < tol:
+            break
+        weights_old = weights
+
+    probs = posteriorprob / np.sum(posteriorprob, axis=1)[:, np.newaxis]
+
+    return means, weights, probs
+
+#calling the function 
+data = np.array('/data2/hanna/synaptogenesis/newvolume/analysis/PMM_metadata.csv')
+poisson_mixture_model(data=data, n_components=2, max_iter=100, tol=1e-3)
+
+
+
+
+
+
+# compute likelihoods 
+        L = matrix(NA, nrow=n_smaples, ncol= 2)
+        compute.log.lik <- function(L, w) {
+          L[,1] = L[,1]*w[1]
+          L[,2] = L[,2]*w[2]
+          return(sum(log(rowSums(L))))
+        }
+ 
+
 
 
