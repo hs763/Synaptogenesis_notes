@@ -1,66 +1,66 @@
+#simulate the data 
 import numpy as np
+import matplotlib.pyplot as plt
 
-def poisson_mixture_model(data, n_components, max_iter=100, tol=1e-3):
-    """
-    Implement the EM algorithm for a Poisson mixture model.
-
-    Parameters:
-    data : numpy array
-        The data to be modeled.
-    n_components : int
-        The number of mixture components.
-    max_iter : int, optional
-        The maximum number of iterations, by default 100.
-    tol : float, optional
-        The tolerance for convergence, by default 1e-3.
-
-    Returns:
-    means : numpy array
-        The estimated means of the Poisson components.
-    weights : numpy array
-        The estimated weights of the Poisson components.
-    probs : numpy array
-        The estimated probabilities of each data point belonging to one of the Poisson distributions.
-    """
-    n_samples = data.shape[0]
-    
-    # Initialize the parameters
-    means = np.random.rand(n_components)
-    weights = np.ones(n_components) / n_components
-
-    for i in range(max_iter):
-        # E-step: compute posterior probabilities 
-        posteriorprob = np.zeros((n_samples, n_components))
-        for j in range(n_components):
-            posteriorprob[:, j] = weights[j] * np.exp(-means[j]) * np.power(means[j], data[i]) / np.math.factorial(data)
-        posteriorprob = posteriorprob / np.sum(posteriorprob, axis=1)[:, np.newaxis]
-
-        # M-step: update parameters
-        weights = np.mean(posteriorprobs, axis=0)
-        means = np.sum(posteriorprob * data[:, np.newaxis], axis=0) / np.sum(posteriorprob, axis=0)
-
-        # Check for convergence
-        if np.max(np.abs(weights - weights_old)) < tol:
-            break
-        weights_old = weights
-
-    probs = posteriorprob / np.sum(posteriorprob, axis=1)[:, np.newaxis]
-
-    return means, weights, probs
-
-#calling the function 
-data = np.genfromtxt('/data2/hanna/synaptogenesis/newvolume/analysis/pmm_meta.csv', delimiter=',')
-poisson_mixture_model(data=data, n_components=2, max_iter=100, tol=1e-3)
+lam = [0.5,1.5]
+np.random.seed(1234)
+z_i = np.random.binomial(500, 0.75, 1)
+model_data = np.random.poisson(lam[z_i +1], 1000)
+#p1 = np.random.poisson(lam[0], 10000)
+#p2 = np.random.poisson(lam[1], 10000)
 
 
-# compute likelihoods 
-        L = matrix(NA, nrow=n_smaples, ncol= 2)
-        compute.log.lik <- function(L, w) {
-          L[,1] = L[,1]*w[1]
-          L[,2] = L[,2]*w[2]
-          return(sum(log(rowSums(L))))
-        }
- 
+count, bins, ignored = plt.hist(p1, 50, density=True)
+plt.show()
+count, bins, ignored = plt.hist(p2, 50, density=True)
+plt.show()
+count, bins, ignored = plt.hist(model_data, 50, density=True)
+plt.show()
 
+#compute likelihoods 
+def compute_log_lik(L, w):
+    L[:, 0] = L[:, 0] * w[0]
+    L[:, 1] = L[:, 1] * w[1]
+    return np.sum(np.log(np.sum(L, axis=1)))
+
+#compute the likelihood of mixture comonents currently specified and store the values in L
+L = np.empty((p1.shape[0], 2))
+L[:, 0] = p1
+L[:, 1] = p2
+
+def mixture_EM(w_init, L):
+    w_curr = w_init
+
+    # Store log-likelihoods for each iteration
+    log_liks = []
+    ll = compute_log_lik(L, w_curr)
+    log_liks.append(ll)
+    delta_ll = 1
+
+    while delta_ll > 1e-5:
+        w_curr = EM_iter(w_curr, L)
+        ll = compute_log_lik(L, w_curr)
+        log_liks.append(ll)
+        delta_ll = log_liks[-1] - log_liks[-2]
+
+    return w_curr, log_liks
+
+
+def EM_iter(w_curr, L):
+    # E-step: compute posterior probabilities
+    posterior = L.copy()
+    for i in range(L.shape[1]):
+        posterior[:, i] = w_curr[i] * posterior[:, i]
+    posterior = posterior / np.sum(posterior, axis=1)[:, np.newaxis]
+
+    # M-step
+    w_next = np.sum(posterior, axis=0) / np.sum(posterior)
+
+    return w_next
+
+
+#perform EM
+ee = mixture_EM(w_init=[0.5, 0.5], L)
+print("Estimate = (", round(ee[0][0], 2), ",", round(ee[0][1], 2), ")", sep="")
 
 
