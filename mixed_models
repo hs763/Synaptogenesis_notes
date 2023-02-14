@@ -32,8 +32,8 @@ def poisson_mixture_model(data, n_components, max_iter=100, tol=1e-3):
         # E-step: compute posterior probabilities 
         posteriorprob = np.zeros((n_samples, n_components))
         for j in range(n_components):
-            posteriorprob[:, j] = weights[j] * np.exp(-means[j]) * np.power(means[j], data) / np.math.factorial(data)
-        posteriorprob /= np.sum(posteriorprob, axis=1)[:, np.newaxis]
+            posteriorprob[:, j] = weights[j] * np.exp(-means[j]) * np.power(means[j], data[i]) / np.math.factorial(data)
+        posteriorprob = posteriorprob / np.sum(posteriorprob, axis=1)[:, np.newaxis]
 
         # M-step: update parameters
         weights = np.mean(posteriorprobs, axis=0)
@@ -49,12 +49,8 @@ def poisson_mixture_model(data, n_components, max_iter=100, tol=1e-3):
     return means, weights, probs
 
 #calling the function 
-data = np.array('/data2/hanna/synaptogenesis/newvolume/analysis/PMM_metadata.csv')
+data = np.genfromtxt('/data2/hanna/synaptogenesis/newvolume/analysis/pmm_meta.csv', delimiter=',')
 poisson_mixture_model(data=data, n_components=2, max_iter=100, tol=1e-3)
-
-
-
-
 
 
 # compute likelihoods 
