@@ -4,11 +4,9 @@ import matplotlib.pyplot as plt
 
 lam = [0.5,1.5]
 np.random.seed(1234)
-z= np.random.binomial(500, 0.75, 1)
-model_data = np.random.poisson(lam[z+1], 1000)
-#p1 = np.random.poisson(lam[0], 10000)
-#p2 = np.random.poisson(lam[1], 10000)
-
+p1 = np.random.poisson(lam[0], 10000)
+p2 = np.random.poisson(lam[1], 10000)
+model_data = p1 + p2
 
 count, bins, ignored = plt.hist(p1, 50, density=True)
 plt.show()
@@ -60,7 +58,11 @@ def EM_iter(w_curr, L):
 
 
 #perform EM
-ee = mixture_EM(w_init=[0.5, 0.5], L)
+ee = mixture_EM([0.5, 0.5], L)
 print("Estimate = (", round(ee[0][0], 2), ",", round(ee[0][1], 2), ")", sep="")
+
+RuntimeWarning: divide by zero encountered in log
+np.seterr(divide = 'ignore')
+np.seterr(divide = 'warn')
 
 
