@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 lam = [0.5,1.5]
 np.random.seed(1234)
-z_i = np.random.binomial(500, 0.75, 1)
-model_data = np.random.poisson(lam[z_i +1], 1000)
+z= np.random.binomial(500, 0.75, 1)
+model_data = np.random.poisson(lam[z+1], 1000)
 #p1 = np.random.poisson(lam[0], 10000)
 #p2 = np.random.poisson(lam[1], 10000)
 
