@@ -1,9 +1,9 @@
 #modelling data
 lam <- c(0.5, 1.5)
+set.seed(1234)
 Z = rbinom(500, 1, 0.75)
 X <- rpois(10000, lam[Z+1])
 hist(X,breaks=15)
-
 
 
 #compute log-likelihood
@@ -13,14 +13,10 @@ compute.log.lik <- function(L, w) {
   return(sum(log(rowSums(L))))
 }
 
-
-
 #
 L = matrix(NA, nrow=length(X), ncol= 2)
 L[, 1] = dpois(X, lam[1], log = FALSE)
 L[, 2] = dpois(X, lam[2], log = FALSE)
-
-
 
 #
 mixture.EM <- function(w.init, L) {
