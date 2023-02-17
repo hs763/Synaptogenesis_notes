@@ -1,24 +1,25 @@
 #modelling data
 lam <- c(0.5, 1.5)
 set.seed(1234)
-Z = rbinom(500, 1, 0.75)
+Z = rbinom(500, 1, 0.6)
 X <- rpois(10000, lam[Z+1])
 hist(X,breaks=15)
 
 
-#compute log-likelihood
+#compute log-likelihood     
+#w(i) = P(z(i) = j|x(i);lam, pi)
 compute.log.lik <- function(L, w) {
   L[,1] = L[,1]*w[1]
   L[,2] = L[,2]*w[2]
   return(sum(log(rowSums(L))))
 }
 
-#
+#generating likelihood matrix L
 L = matrix(NA, nrow=length(X), ncol= 2)
 L[, 1] = dpois(X, lam[1], log = FALSE)
 L[, 2] = dpois(X, lam[2], log = FALSE)
 
-#
+#generating EM function 
 mixture.EM <- function(w.init, L) {
   
   w.curr <- w.init
@@ -53,8 +54,25 @@ EM.iter <- function(w.curr, L, ...) {
 }
 
 
+#estimating means 
+meta <- read.csv('/data2/hanna/synaptogenesis/newvolume/analysis/Metadata.csv')
+h_fraction <- meta$tscp_count[meta$cell_species == 'h']
+m_fraction <- meta$tscp_count[meta$cell_species == 'm']
+
+length(h_fraction)
+#[1] 12325
+length(m_fraction)
+#[1] 4125
+
+lam <- c()
+lam[1] <- mean(h_fraction)
+lam[2] <- mean(m_fraction)
+
 
 #perform EM
+X <- read.csv('/data2/hanna/synaptogenesis/newvolume/analysis/pmm_meta.csv')
+X <- X[3]
+X <- as.numeric(as.character(unlist(X)))
 ee <- mixture.EM(w.init=c(0.5,0.5), L)
 print(paste("Estimate = (", round(ee[[1]][1],2), ",", round(ee[[1]][2],2), ")", sep=""))
 
