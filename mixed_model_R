@@ -5,7 +5,6 @@ Z = rbinom(500, 1, 0.6)
 X <- rpois(10000, lam[Z+1])
 hist(X,breaks=15)
 
-
 #compute log-likelihood     
 #w(i) = P(z(i) = j|x(i);lam, pi)
 compute.log.lik <- function(L, w) {
@@ -53,7 +52,10 @@ EM.iter <- function(w.curr, L, ...) {
   return(w.next)
 }
 
+ee <- mixture.EM(w.init=c(0.5,0.5), L)
 
+
+###working on our data##############################################
 #estimating means 
 meta <- read.csv('/data2/hanna/synaptogenesis/newvolume/analysis/Metadata.csv')
 h_fraction <- meta$tscp_count[meta$cell_species == 'h']
@@ -68,11 +70,83 @@ lam <- c()
 lam[1] <- mean(h_fraction)
 lam[2] <- mean(m_fraction)
 
-
 #perform EM
 X <- read.csv('/data2/hanna/synaptogenesis/newvolume/analysis/pmm_meta.csv')
 X <- X[3]
 X <- as.numeric(as.character(unlist(X)))
-ee <- mixture.EM(w.init=c(0.5,0.5), L)
-print(paste("Estimate = (", round(ee[[1]][1],2), ",", round(ee[[1]][2],2), ")", sep=""))
+
+#generating likelihood matrix L
+L = matrix(NA, nrow=length(X), ncol= 2)
+L[, 1] = dpois(X, lam[1], log = FALSE)
+L[, 2] = dpois(X, lam[2], log = FALSE)
+
+
+#computing log-likelihood
+compute.log.lik <- function(L, w) {
+L[,1] = L[,1]*w
+L[,2] = L[,2]*(1-w)
+return(sum(log(rowSums(L))))
+}
+
+#generating EM function 
+mixture.EM <- function(w.init, L) {
+  
+  w.curr <- w.init
+  
+  # store log-likehoods for each iteration
+  log_liks <- c()
+  ll       <- compute.log.lik(L, w.curr)
+  log_liks <- c(log_liks, ll)
+  delta.ll <- 1
+ 
+  
+  while(delta.ll > 1e-5) {
+    w.curr   <- EM.iter(w.curr, L)
+    ll       <- compute.log.lik(L, w.curr)
+    log_liks <- c(log_liks, ll)
+    delta.ll <- log_liks[length(log_liks)]  - log_liks[length(log_liks)-1]
+    browser()
+  }
+  
+  return(list(w.curr, log_liks))
+}
+
+EM.iter <- function(w.curr, L, ...) {
+  
+  # E-step: compute E_{Z|X,w0}[I(Z_i = k)]
+  z_ik <- L
+  for(i in seq_len(ncol(L))) {
+    z_ik[,i] <- w.curr[i]*z_ik[,i]
+  }
+  z_ik     <- z_ik / rowSums(z_ik)
+  
+  # M-step
+  w.next   <- colSums(z_ik)/sum(z_ik)
+  return(w.next)
+}
+
+#calling the function 
+w_init = rep(c(0.5),each = length(L[,1])) 
+ee <- mixture.EM(w_init, L)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
