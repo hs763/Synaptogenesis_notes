@@ -2,49 +2,60 @@
 lam <- c(100, 850)
 set.seed(1234)
 Z = rbinom(500, 1, 0.6)
-X <- rpois(1000000, lam[Z+1])
-hist(X)
+D <- rpois(1000000, lam[Z+1])
+#hist(X)
 
 #compute log-likelihood     
 #w(i) = P(z(i) = j|x(i);lam, pi)
-compute.log.lik <- function(L, w) {
+compute.log.lik <- function(D, w, mean) {
+  
+  D <- as.numeric(D)
   w <- as.numeric(unlist(w))
+  #using L from the global environment 
+  L[,1] = dpois(D, mean[1], log = FALSE)
+  L[,2] = dpois(D, mean[2], log = FALSE)
+  
   L[,1] = L[,1]*w[1]
   L[,2] = L[,2]*w[2]
   return(sum(log(rowSums(L))))
 }
 
 #generating likelihood matrix L
-L = matrix(NA, nrow=length(X), ncol= 2)
-L[,1] = dpois(X, lam[1], log = FALSE)
-L[,2] = dpois(X, lam[2], log = FALSE)
+L = matrix(NA, nrow=length(D), ncol= 2)
+
 
 #generating EM function 
-mixture.EM <- function(mean.init ,w.init, L, X) {
+mixture.EM <- function(mean.init ,w.init, L, D) {
   
   w.curr <- w.init
   mean.curr <- mean.init
+  D <- as.numeric(D)
+  L[,1] <- dpois(D, mean.init[1], log = FALSE)
+  L[,2] <- dpois(D, mean.init[2], log = FALSE)
   
+
   # store log-likehoods for each iteration
   log_liks <- c()
-  ll       <- compute.log.lik(L, w.curr)
+  ll       <- compute.log.lik(D, w.curr, mean.curr)
   log_liks <- c(log_liks, ll)
   delta.ll <- 1
- 
+
   while(delta.ll > 1e-5) {
-    w.curr   <- EM.iter(w.curr, L, X)[1]
-    ll       <- compute.log.lik(L, w.curr)
+    out   <- EM.iter(w.curr, L, D)
+    ll       <- compute.log.lik(D, out$w.next, out$mean.next)
     log_liks <- c(log_liks, ll)
     delta.ll <- log_liks[length(log_liks)]  - log_liks[length(log_liks)-1]
   }
   
-  posteriors <- EM.iter(w.curr, L, X)[2]
-  mean.curr <- EM.iter(w.curr, L, X)[3]
+  out <- EM.iter(w.curr, L, D)
+  w.curr <- out$w.next
+  posteriors <- out$z_ik
+  mean.curr <- out$mean.next
   
   return(list(w.curr, log_liks, posteriors, mean.init, mean.curr))
 }
 
-EM.iter <- function(w.curr, L, X, ...) {
+EM.iter <- function(w.curr, L, D, ...) {
   
   # E-step: compute E_{Z|X,w0}[I(Z_i = k)] (posterior)
   z_ik <- L
@@ -53,13 +64,15 @@ EM.iter <- function(w.curr, L, X, ...) {
     z_ik[,i] <- w.curr[i]*z_ik[,i]
   }
   z_ik     <- z_ik / rowSums(z_ik)
+ 
   
   # M-step
   w.next   <- colSums(z_ik)/sum(z_ik)
-  mu.one <- mean((sum(X*(z_ik[,1]*w.next[1])))/sum(z_ik[,1]))
-  mu.two <- mean((sum(X*(z_ik[,2]*w.next[2])))/sum(z_ik[,2]))
-  mean <- c(mu.one, mu.two)
-  out <- list(w.next, z_ik, mean)
+  mu.one <- sum(X*z_ik[,1])/sum(z_ik[,1])
+  mu.two <- sum(X*z_ik[,2])/sum(z_ik[,2])
+  mean.next <- c(mu.one, mu.two)
+  out <- list(w.next, z_ik, mean.next)
+  names(out) <- c("w.next", "z_ik", "mean.next")
   return(out)
 }
 
