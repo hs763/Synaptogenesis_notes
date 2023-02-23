@@ -8,6 +8,7 @@ hist(X)
 #compute log-likelihood     
 #w(i) = P(z(i) = j|x(i);lam, pi)
 compute.log.lik <- function(L, w) {
+  w <- as.numeric(unlist(w))
   L[,1] = L[,1]*w[1]
   L[,2] = L[,2]*w[2]
   return(sum(log(rowSums(L))))
@@ -15,13 +16,14 @@ compute.log.lik <- function(L, w) {
 
 #generating likelihood matrix L
 L = matrix(NA, nrow=length(X), ncol= 2)
-L[, 1] = dpois(X, lam[1], log = FALSE)
-L[, 2] = dpois(X, lam[2], log = FALSE)
+L[,1] = dpois(X, lam[1], log = FALSE)
+L[,2] = dpois(X, lam[2], log = FALSE)
 
 #generating EM function 
-mixture.EM <- function(w.init, L) {
+mixture.EM <- function(mean.init ,w.init, L, X) {
   
   w.curr <- w.init
+  mean.curr <- mean.init
   
   # store log-likehoods for each iteration
   log_liks <- c()
@@ -30,35 +32,53 @@ mixture.EM <- function(w.init, L) {
   delta.ll <- 1
  
   while(delta.ll > 1e-5) {
-    w.curr   <- EM.iter(w.curr, L)[1]
+    w.curr   <- EM.iter(w.curr, L, X)[1]
     ll       <- compute.log.lik(L, w.curr)
     log_liks <- c(log_liks, ll)
     delta.ll <- log_liks[length(log_liks)]  - log_liks[length(log_liks)-1]
   }
   
-  posteriors <- EM.iter(w.curr, L)[2]
-  mean <- EM.iter(w.curr, L)[3]
+  posteriors <- EM.iter(w.curr, L, X)[2]
+  mean.curr <- EM.iter(w.curr, L, X)[3]
   
-  return(list(w.curr, log_liks, posteriors, mean))
+  return(list(w.curr, log_liks, posteriors, mean.init, mean.curr))
 }
 
-EM.iter <- function(w.curr, L, ...) {
+EM.iter <- function(w.curr, L, X, ...) {
   
   # E-step: compute E_{Z|X,w0}[I(Z_i = k)] (posterior)
   z_ik <- L
+  w.curr <- as.numeric(unlist(w.curr))
   for(i in seq_len(ncol(L))) {
     z_ik[,i] <- w.curr[i]*z_ik[,i]
   }
   z_ik     <- z_ik / rowSums(z_ik)
   
   # M-step
-  mean <- 
   w.next   <- colSums(z_ik)/sum(z_ik)
+  mu.one <- mean((sum(X*(z_ik[,1]*w.next[1])))/sum(z_ik[,1]))
+  mu.two <- mean((sum(X*(z_ik[,2]*w.next[2])))/sum(z_ik[,2]))
+  mean <- c(mu.one, mu.two)
   out <- list(w.next, z_ik, mean)
   return(out)
 }
 
-ee <- mixture.EM(w.init=c(0.5,0.5), L)
+ee <- mixture.EM(mean.init = c(100, 500), w.init=c(0.5,0.5), L, X)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ###working on our data##############################################
