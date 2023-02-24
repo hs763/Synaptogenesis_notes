@@ -78,7 +78,7 @@ EM.iter <- function(w.curr, L, D, ...) {
 
 ee <- mixture.EM(mean.init = c(100, 500), w.init=c(0.5,0.5), L, X)
 
-
+D <- read.csv('/data2/ivanir/Feline2023/ParseBS/newvolume/analysis/sCell/combined')
 
 
 
