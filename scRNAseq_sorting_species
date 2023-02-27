@@ -22,8 +22,6 @@ ngenes    <- colSums(counts > 0)
 metadata$rate_h <- metadata$hg38_tscp_count/metadata$tscp_count
 metadata$rate_m <- metadata$mm10_tscp_count/metadata$tscp_count
 
-names(metadata)[24] <- "exp_d_h"
-names(metadata)[28] <- "exp_d_m"
 
 metadata$cell_specie <- rep(NA, nrow(metadata))
 for (i in 1:nrow(metadata)){
@@ -51,11 +49,34 @@ for (i in 1:nrow(metadata)){
   }
 }
 
+names(metadata)[24] <- "day_h"
+names(metadata)[28] <- "day_m"
+
+names(metadata)[23] <- "batch_h"
+names(metadata)[27] <- "batch_m"
+
+names(metadata)[25] <- "replicate_h"
+names(metadata)[29] <- "replicate_m"
+
+metadata$exp_d_h = as.numeric(metadata$day_h) - 55
+metadata$exp_d_m = as.numeric(metadata$day_m) - 8
+
+metadata$sample_name_h <- paste(metadata$batch_h, metadata$exp_d_h, metadata$replicate_h, sep="_")
+metadata$sample_name_m <- paste(metadata$batch_m, metadata$exp_d_m, metadata$replicate_m, sep="_")
+
 metadata$exp_d <- rep(NA, nrow(metadata))
 for (i in 1:nrow(metadata)){
   if (metadata$cell_species[i] == "h"){
     metadata$exp_d[i] <- metadata$exp_d_h[i]}
   else {metadata$exp_d[i] <- metadata$exp_d_m[i]
+  }
+}
+
+metadata$sample_name<- rep(NA, nrow(metadata))
+for (i in 1:nrow(metadata)){
+  if (metadata$cell_species[i] == "h"){
+    metadata$sample_name[i] <- metadata$sample_name_h[i]}
+  else {metadata$sample_name[i] <- metadata$sample_name_m[i]
   }
 }
 
@@ -75,14 +96,18 @@ dev.off()
 #barplot of cells per timepoint
 
 pdf("cell_per_timepoint.pdf")
-ggplot(metadata) + geom_histogram(aes(x = exp_d, fill = cell_species),binwidth = 0.5, center = 0.5) + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =unique(metadata$exp_d))
+ggplot(metadata) + geom_histogram(aes(x = exp_d, fill = cell_species),binwidth = 0.5, center = 0.5) 
+  + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") 
+  + scale_x_continuous(breaks =unique(metadata$exp_d))
 dev.off()
 
+pdf("cell_number_per_timepoint.pdf")
+ggplot(metadata, aes(x = exp_d, fill = cell_species)) + geom_bar() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =unique(metadata$exp_d))
+dev.off()
 
-
-
-
-
+pdf("cell_number_per_sample.pdf")
+ggplot(metadata, aes(x = sample_name, fill = cell_species)) + geom_bar() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") + scale_x_discrete(breaks =unique(metadata$sample_name)) + theme(axis.text.x = element_text(size = 5,face = "bold", angle=45, vjust=.5, hjust=0.5), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10), aspect.ratio = 1/8)
+dev.off()
 
 #genes_human <- genes[genes$genome == "hg38",]
 #genes_mouse <- genes[genes$genome == "mm10",]
