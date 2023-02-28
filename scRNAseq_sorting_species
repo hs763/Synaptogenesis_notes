@@ -106,7 +106,7 @@ ggplot(metadata, aes(x = exp_d, fill = cell_species)) + geom_bar() + labs(x ="Da
 dev.off()
 
 pdf("cell_number_per_sample.pdf")
-ggplot(metadata, aes(x = sample_name, fill = cell_species)) + geom_bar() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") + scale_x_discrete(breaks =unique(metadata$sample_name)) + theme(axis.text.x = element_text(size = 5,face = "bold", angle=45, vjust=.5, hjust=0.5), axis.title.x = element_text(size = 10), axis.title.y = element_text(size = 10), aspect.ratio = 1/8)
+ggplot(metadata, aes(x = sample_name, fill = cell_species)) + geom_bar() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per sample") + scale_fill_discrete(name = "species") + scale_x_discrete(breaks =unique(metadata$sample_name)) + theme(axis.text.x = element_text(size = 6,face = "bold", angle=45, vjust=.5, hjust=0.5, family = "mono"), axis.text.y = element_text(size = 8, family = "mono"), axis.title.x = element_text(size = 8, family = "mono"), axis.title.y = element_text(size = 8, family = "mono"), legend.position = 'bottom', plot.title = element_text(size=12, family = "mono"), aspect.ratio = 1/8) + scale_y_log10()
 dev.off()
 
 #genes_human <- genes[genes$genome == "hg38",]
