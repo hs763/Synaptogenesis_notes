@@ -33,10 +33,13 @@ for (i in 1:nrow(metadata)){
 
 ####mapping rate plots 
 #human mapping rates in all cells 
-ggplot(metadata, aes(x=rate_h)) + geom_histogram(color="blue", fill= "blue")
-
-#human mapping rates in call cells 
-ggplot(metadata, aes(x=rate_m)) + geom_histogram(color="orange", fill= "orange")
+pdf("mapping_rate_stribution_h"
+ggplot(metadata, aes(x=rate_h)) + geom_histogram(color="blue", fill= "blue") +labs(x ="Human transcript mapping rate", y= "Number of cells",title = "Mapping rate distribution for human transcripts")
+dev.off()
+#mouse mapping rates in all cells 
+pdf("mapping_rate_stribution_m")
+ggplot(metadata, aes(x=rate_m)) + geom_histogram(color="orange", fill= "orange") +labs(x ="Mouse transcript mapping rate", y= "Number of cells",title = "Mapping rate distribution for mouse transcripts")
+dev.off()
 
 subset_h <- metadata[metadata$cell_specie == "h",]
 subset_m <- metadata[metadata$cell_specie == "m",]
@@ -82,15 +85,15 @@ for (i in 1:nrow(metadata)){
 
 #plotiing dsitribution of log(coutns) per species (Poisson distribution)
 
-pdf("dist_count_species.pdf")  
-ggplot(metadata, aes(tscp_count, fill = cell_species)) + geom_histogram(bins=30)
+pdf("dist_counts_species.pdf")  
+ggplot(metadata, aes(log(tscp_count), fill = cell_species)) + geom_histogram(bins=30) +labs(x ="log(mumber of transcripts) ", y= "Number of cells",title = "Distirbution of cell transcript number")
 dev.off()
 
 
 #barplot of lib.szies (trsc number) per time point per species
 
 pdf("trsc_persample_perspecies,pdf")
-ggplot(metadata, aes(x = exp_d, y= lib.sizes, fill = cell_species)) + geom_col() + labs(x ="Day after slicing", y= "Numer of transcript",title = "Transcript number per smaple per species") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =pretty(metadata$exp_d, n=10))
+ggplot(metadata, aes(x = exp_d, y= lib.sizes, fill = cell_species)) + geom_col() + labs(x ="Day after slicing", y= "Numer of transcript",title = "Transcript number per smaple per species") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =pretty(metadata$exp_d, n=10) + theme(aspect.ratio = 1/2))
 dev.off() 
 
 #barplot of cells per timepoint
@@ -102,11 +105,12 @@ ggplot(metadata) + geom_histogram(aes(x = exp_d, fill = cell_species),binwidth =
 dev.off()
 
 pdf("cell_number_per_timepoint.pdf")
-ggplot(metadata, aes(x = exp_d, fill = cell_species)) + geom_bar() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =unique(metadata$exp_d))
+ggplot(metadata, aes(x = exp_d, fill = cell_species)) + geom_bar() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per timepoint") + scale_fill_discrete(name = "species") + scale_x_continuous(breaks =unique(metadata$exp_d)) + theme(aspect.ratio =1/2)
 dev.off()
 
+
 pdf("cell_number_per_sample.pdf")
-ggplot(metadata, aes(x = sample_name, fill = cell_species)) + geom_bar() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per sample") + scale_fill_discrete(name = "species") + scale_x_discrete(breaks =unique(metadata$sample_name)) + theme(axis.text.x = element_text(size = 6,face = "bold", angle=45, vjust=.5, hjust=0.5, family = "mono"), axis.text.y = element_text(size = 8, family = "mono"), axis.title.x = element_text(size = 8, family = "mono"), axis.title.y = element_text(size = 8, family = "mono"), legend.position = 'bottom', plot.title = element_text(size=12, family = "mono"), aspect.ratio = 1/8) + scale_y_log10()
+ggplot(metadata, aes(x = sample_name, fill = cell_species)) + geom_bar() + coord_flip() + labs(x ="Day after slicing", y= "Numer of cells",title = "Cell number per sample") + scale_fill_discrete(name = "species") + scale_x_discrete(breaks =unique(metadata$sample_name)) + scale_y_log10()
 dev.off()
 
 #genes_human <- genes[genes$genome == "hg38",]
@@ -119,11 +123,3 @@ dev.off()
 #lib.sizes_m <- colSums(b)
 
 
-ggplot(Metadata, aes(x=cell_specie)) + geom_density()
-
-
-ggplot(Metadata, aes(x=cell_specie)) + 
-    geom_histogram(aes(y=..density..),     
-                   binwidth=.5,
-                   colour="black", fill="white") +
-    geom_density(alpha=.2, fill="#FF6666")  
