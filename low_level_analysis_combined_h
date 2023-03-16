@@ -11,7 +11,7 @@ library(scDblFinder)
 
 library(umap)
 library(reticulate)
-use_condaenv(condaenv="scanpy-p3.9")
+#use_condaenv(condaenv="scanpy-p3.9")
 
 umap = import('umap')
 
