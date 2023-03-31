@@ -67,7 +67,7 @@ submeta$day <- gsub("d","",submeta$day)
 
 metadata <- data.frame(cbind(metadata, lib.sizes, sample_number, sample_bc1_well, sample_name, submeta))
 plot_df <- metadata
-
+setwd('/data2/hanna/synaptogenesis/newvolume/analysis/QC_H')
 
 ensembl <- useEnsembl(biomart = "ensembl",  dataset = "hsapiens_gene_ensembl",mirror = "useast")
 gene_map  <- getBM(attributes=c("ensembl_gene_id", "hgnc_symbol", "chromosome_name"),
@@ -75,7 +75,8 @@ gene_map  <- getBM(attributes=c("ensembl_gene_id", "hgnc_symbol", "chromosome_na
   
 mt.index    <- gene_map$chromosome_name == "MT"
 mt.counts   <- counts[which(genes$gene_name %in% gene_map$hgnc_symbol[mt.index]), ]
-mt.fraction <- colSums(mt.counts/lib.sizes)
+mt.count <- solSums(mt.counts)
+mt.fraction <- mt.count/lib.sizes
 
 
 mt.p  <- pnorm(mt.fraction, mean = median(mt.fraction), sd = mad(mt.fraction), lower.tail = FALSE)
@@ -103,8 +104,8 @@ sce_filt  <- sce[calculateAverage(sce)>0.05,]
 clusts <- as.numeric(quickCluster(sce_filt, method = "igraph", min.size = 100))
 min.clust <- min(table(clusts))/2
 new_sizes <- c(floor(min.clust/3), floor(min.clust/2), floor(min.clust))
-sce_filtn <- computeSumFactors(sce_filt, clusters = clusts, sizes = new_sizes, max.cluster.size = 3000)
-sizeFactors(sce) <- sizeFactors(sce_filtn)
+sce_filt <- computeSumFactors(sce_filt, clusters = clusts, sizes = new_sizes, max.cluster.size = 3000)
+sizeFactors(sce) <- sizeFactors(sce_filt)
 
 library(BiocParallel)
 bp <- MulticoreParam(12, RNGseed=1234)
@@ -114,13 +115,13 @@ sce <- scDblFinder(sce, samples="bc1_well", dbr=.03, dims=30, BPPARAM=bp)
 bpstop(bp)
 table(sce$scDblFinder.class)
 
-sce_filtn <- sce[calculateAverage(sce)>0.05,]
-sce_filtn <- logNormCounts(sce_filtn)
+sce_filt <- sce[calculateAverage(sce)>0.05,]
+sce_filt <- logNormCounts(sce_filt)
 
-decomp <- modelGeneVar(sce_filtn)
+decomp <- modelGeneVar(sce_filt)
 hvgs   <- rownames(decomp)[decomp$FDR < 0.5]
-pca    <- prcomp_irlba(t(logcounts(sce_filtn[hvgs,])), n = 30)
-rownames(pca$x) <- colnames(sce_filtn)
+pca    <- prcomp_irlba(t(logcounts(sce_filt[hvgs,])), n = 30)
+rownames(pca$x) <- colnames(sce_filt)
 tsne <- Rtsne(pca$x, pca = FALSE, check_duplicates = FALSE, num_threads=30)
 
 #
