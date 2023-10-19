@@ -11,25 +11,25 @@ PBS2='/mnt/hanna/synaptogenesis'
 PATH="/mnt/ivanir/Feline2023/ParseBS/ParseBiosciences-Pipeline.1.0.3p:$PATH"
 
 cd $PBS2/newvolume
-nohup split-pipe \
+split-pipe \
 --mode mkref \
 --genome_name hg38 \
 --fasta $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa \
 --genes $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.108.gtf \
 --output_dir $PBS2/newvolume/genomes/hg38_noGFP
 
-nohup split-pipe \
+split-pipe \
 --mode mkref \
 --genome_name mm10 \
---fasta $PBS2/newvolume/genomes/Mus_musculus.GRCm38.dna.primary_assembly.fa \
---genes $PBS2/newvolume/genomes/Mus_musculus.GRCm38.108.gtf \
+--fasta $PBS2/newvolume/genomes/Mus_musculus.GRCm39.dna.primary_assembly.fa \
+--genes $PBS2/newvolume/genomes/Mus_musculus.GRCm39.108.gtf \
 --output_dir $PBS2/newvolume/genomes/mm10_noGFP
 
-nohup split-pipe \
+split-pipe \
 --mode mkref \
 --genome_name hg38 mm10 \
---fasta $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa $PBS2/newvolume/genomes/Mus_musculus.GRCm38.dna.primary_assembly.fa \
---genes $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.108.gtf $PBS2/newvolume/genomes/Mus_musculus.GRCm38.108.gtf \
+--fasta $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa $PBS2/newvolume/genomes/Mus_musculus.GRCm39.dna.primary_assembly.fa \
+--genes $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.108.gtf $PBS2/newvolume/genomes/Mus_musculus.GRCm39.108.gtf \
 --output_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP
 
 #cd $PBS/newvolume/expdata/
@@ -61,47 +61,47 @@ nohup split-pipe \
 
 # Pipeline running
 #single cell
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/ACTTGA
 
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTCAA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTCAA.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/AGTCAA
 
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTTCC.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTTCC.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/AGTTCC
 
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ATGTCA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ATGTCA.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/ATGTCA
 
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CAGATC.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CAGATC.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/CAGATC
 
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CTTGTA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CTTGTA.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/CTTGTA
 
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.GATCAG.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.GATCAG.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/GATCAG
 
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.TAGCTT.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.TAGCTT.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/TAGCTT
 
-split-pipe \
+nohup split-pipe \
     --mode comb \
     --sublibraries $PBS2/newvolume/analysis2/ACTTGA $PBS2/newvolume/analysis2/AGTCAA $PBS2/newvolume/analysis2/AGTTCC $PBS2/newvolume/analysis2/ATGTCA $PBS2/newvolume/analysis2/CAGATC $PBS2/newvolume/analysis2/CTTGTA $PBS2/newvolume/analysis2/GATCAG  $PBS2/newvolume/analysis2/TAGCTT \
     --output_dir $PBS2/newvolume/analysis2/combined
@@ -111,7 +111,7 @@ rm SLX-22602.r_1.fq.gz SLX-22602.r_2.fq.gz
 
 
 #human reference genome (written to '/data2/hanna/synaptogenesis/newvolume/analysis2')
-split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
+nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/ACTTGA_h
@@ -120,49 +120,49 @@ nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTCAA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTCAA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/AGTCAA_h &
-[1] 51084
+#[1] 51084
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTTCC.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTTCC.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/AGTTCC_h &
-[1] 59438
+#[1] 59438
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ATGTCA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ATGTCA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/ATGTCA_h &
-[2] 59748
+#[2] 59748
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CAGATC.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CAGATC.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/CAGATC_h &
-[3] 60324
+#[3] 60324
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CTTGTA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CTTGTA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/CTTGTA_h &
-[4] 60558
+#[4] 60558
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.GATCAG.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.GATCAG.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/GATCAG_h &
-[5] 60937
+#[5] 60937
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.TAGCTT.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.TAGCTT.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/TAGCTT_h &
-[6] 61208
+#[6] 61208
 
 nohup split-pipe \
     --mode comb \
     --sublibraries $PBS2/analysis2/ACTTGA_h $PBS2/analysis2/AGTCAA_h $PBS2/analysis2/AGTTCC_h $PBS2/analysis2/ATGTCA_h $PBS2/analysis2/CAGATC_h $PBS2/analysis2/CTTGTA_h $PBS2/analysis2/GATCAG_h  $PBS2/analysis2/TAGCTT_h \
     --output_dir $PBS2/analysis2/combined_h &
-[1] 75156
+#[1] 75156
 
 
 #mouse reference genome (written to '/data2/hanna/synaptogenesis/newvolume/analysis2')
@@ -170,52 +170,52 @@ nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/ACTTGA_m &
-[1] 10252
+#[1] 10252
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTCAA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTCAA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/AGTCAA_m &
-[2] 10459
+#[2] 10459
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTTCC.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTTCC.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/AGTTCC_m &
-[3] 10743
+#[3] 10743
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ATGTCA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ATGTCA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/ATGTCA_m &
-[4] 10953
+#[4] 10953
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CAGATC.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CAGATC.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/CAGATC_m &
-[5] 11267
+#[5] 11267
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CTTGTA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.CTTGTA.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/CTTGTA_m &
-[6] 11486
+#[6] 11486
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.GATCAG.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.GATCAG.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/GATCAG_m &
-[7] 11734
+#[7] 11734
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.TAGCTT.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.TAGCTT.s_1.r_2.fq.gz \
 --output_dir $PBS2/analysis2/TAGCTT_m &
-[8] 11981
+#[8] 11981
 
 nohup split-pipe \
     --mode comb \
     --sublibraries $PBS2/analysis2/ACTTGA_m $PBS2/analysis2/AGTCAA_m $PBS2/analysis2/AGTTCC_m $PBS2/analysis2/ATGTCA_m $PBS2/analysis2/CAGATC_m $PBS2/analysis2/CTTGTA_m $PBS2/analysis2/GATCAG_m  $PBS2/analysis2/TAGCTT_m \
     --output_dir $PBS2/analysis2/combined_m &
-    [1] 75404
+    #[1] 75404
