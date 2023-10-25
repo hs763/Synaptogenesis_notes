@@ -6,9 +6,8 @@ cd /data2/hanna/synaptogenesis/newvolume
 singularity shell --bind /data2:/mnt pbp.sif
 cd /mnt/hanna/synaptogenesis/newvolume
 
-PBS='/data2/ivanir/Feline2023/ParseBS'
-PBS2='/data2/hanna/synaptogenesis' 
-PATH="/data2/ivanir/Feline2023/ParseBS/ParseBiosciences-Pipeline.1.0.3p:$PATH"
+PBS='/mnt/ivanir/Feline2023/ParseBS'
+PBS2='/mnt/hanna/synaptogenesis'
 
 cd $PBS2/newvolume
 split-pipe \
@@ -32,22 +31,15 @@ split-pipe \
 --genes $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.108.gtf $PBS2/newvolume/genomes/Mus_musculus.GRCm39.108.gtf \
 --output_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP
 
-#exit spipe enviornment 
-
-PBS='/data2/ivanir/Feline2023/ParseBS'
-PBS2='/data2/hanna/synaptogenesis' 
-PATH="/data2/ivanir/Feline2023/ParseBS/ParseBiosciences-Pipeline.1.0.3p:$PATH"
-
 #cd $PBS/newvolume/expdata/
-#this has ben run and i can use it? 
-nohup cat SLX-22602.DNAA007.HGMLNDMXY.s_1.r_1.fq.gz SLX-22602.DNAA007.HGMLNDMXY.s_2.r_1.fq.gz > $PBS2/newvolume/expdata/SLX-22602.tmp.r_1.fq.gz
-nohup cat SLX-22602.DNAA007.HGMLNDMXY.s_1.r_2.fq.gz SLX-22602.DNAA007.HGMLNDMXY.s_2.r_2.fq.gz > $PBS2/newvolume/expdata/SLX-22602.tmp.r_2.fq.gz
+cat SLX-22602.DNAA007.HGMLNDMXY.s_1.r_1.fq.gz SLX-22602.DNAA007.HGMLNDMXY.s_2.r_1.fq.gz > SLX-22602.tmp.r_1.fq.gz
+cat SLX-22602.DNAA007.HGMLNDMXY.s_1.r_2.fq.gz SLX-22602.DNAA007.HGMLNDMXY.s_2.r_2.fq.gz > SLX-22602.tmp.r_2.fq.gz
 
-nohup cat SLX-22602.HGMLNDMXY.s_2.r_1.lostreads.fq.gz SLX-22602.HGMLNDMXY.s_2.r_1.lostreads.fq.gz > $PBS2/newvolume/expdata/SLX-22602.lostreads.tmp.r_1.fq.gz
-nohup cat SLX-22602.HGMLNDMXY.s_2.r_1.lostreads.fq.gz SLX-22602.HGMLNDMXY.s_2.r_2.lostreads.fq.gz > $PBS2/newvolume/expdata/SLX-22602.lostreads.tmp.r_2.fq.gz
+cat SLX-22602.HGMLNDMXY.s_2.r_1.lostreads.fq.gz SLX-22602.HGMLNDMXY.s_2.r_1.lostreads.fq.gz > SLX-22602.lostreads.tmp.r_1.fq.gz
+cat SLX-22602.HGMLNDMXY.s_2.r_1.lostreads.fq.gz SLX-22602.HGMLNDMXY.s_2.r_2.lostreads.fq.gz > SLX-22602.lostreads.tmp.r_2.fq.gz
 
-nohup cat $PBS2/newvolume/expdata/SLX-22602.tmp.r_1.fq.gz $PBS2/newvolume/expdata/SLX-22602.lostreads.tmp.r_1.fq.gz > $PBS2/newvolume/expdata/SLX-22602.r_1.fq.gz
-nohup cat $PBS2/newvolume/expdata/SLX-22602.tmp.r_2.fq.gz $PBS2/newvolume/expdata/SLX-22602.lostreads.tmp.r_2.fq.gz > $PBS2/newvolume/expdata/SLX-22602.r_2.fq.gz
+cat SLX-22602.tmp.r_1.fq.gz SLX-22602.lostreads.tmp.r_1.fq.gz > SLX-22602.r_1.fq.gz
+cat SLX-22602.tmp.r_2.fq.gz SLX-22602.lostreads.tmp.r_2.fq.gz > SLX-22602.r_2.fq.gz
 
 nohup ./demultiplexer.rhel/demuxFQ \
     -c -d -e -i -t 1 -r 0.01 \
@@ -57,19 +49,36 @@ nohup ./demultiplexer.rhel/demuxFQ \
     SLX-22602.r_1.index.txt \
     SLX-22602.r_1.fq.gz &
     
-nohup ./demultiplexer.rhel/demuxFQ \
-    -c -d -i -e -t 1 -r 0.01 \
-    -o correctFastq \
-    -b SLX-22602.lostreads.r_2.fq.gz \
-    -s SLX-22602.demultiplexsummary.r2.txt \
-    SLX-22602.r_2.index.txt \
-    SLX-22602.r_2.fq.gz &
+#nohup ./demultiplexer.rhel/demuxFQ \
+    #-c -d -i -e -t 1 -r 0.01 \
+    #-o correctFastq \
+    #-b SLX-22602.lostreads.r_2.fq.gz \
+    #-s SLX-22602.demultiplexsummary.r2.txt \
+    #SLX-22602.r_2.index.txt \
+    #SLX-22602.r_2.fq.gz &
+    
+rm SLX-22602.r_1.fq.gz SLX-22602.r_2.fq.gz
 
-#enter spipe enviornment 
 
-PBS='/mnt/ivanir/Feline2023/ParseBS'
-PBS2='/mnt/hanna/synaptogenesis' 
-PATH="/mnt/ivanir/Feline2023/ParseBS/ParseBiosciences-Pipeline.1.0.3p:$PATH"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##########MOJE####################
+
+
+
 
 # Pipeline running
 #single cell
@@ -77,6 +86,12 @@ nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_1.fq.gz \
 --fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_2.fq.gz \
 --output_dir $PBS2/newvolume/analysis2/ACTTGA
+
+split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS/newvolume/genomes/hg38_mm10/ \
+--fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_1.fq.gz \
+--fq2 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.ACTTGA.s_1.r_2.fq.gz \
+--output_dir $PBS2/newvolume/analysis2/ACTTGA
+
 
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP/ \
 --fq1 $PBS/newvolume/expdata/correctFastq/SLX-22602.DNAA007.HGMLNDMXY.AGTCAA.s_1.r_1.fq.gz \
@@ -117,10 +132,6 @@ nohup split-pipe \
     --mode comb \
     --sublibraries $PBS2/newvolume/analysis2/ACTTGA $PBS2/newvolume/analysis2/AGTCAA $PBS2/newvolume/analysis2/AGTTCC $PBS2/newvolume/analysis2/ATGTCA $PBS2/newvolume/analysis2/CAGATC $PBS2/newvolume/analysis2/CTTGTA $PBS2/newvolume/analysis2/GATCAG  $PBS2/newvolume/analysis2/TAGCTT \
     --output_dir $PBS2/newvolume/analysis2/combined
-    
-rm SLX-22602.r_1.fq.gz SLX-22602.r_2.fq.gz
-
-
 
 #human reference genome (written to '/data2/hanna/synaptogenesis/newvolume/analysis2')
 nohup split-pipe --mode all --kit WT --chemistry v2 --genome_dir $PBS2/newvolume/genomes/hg38_noGFP/ \
