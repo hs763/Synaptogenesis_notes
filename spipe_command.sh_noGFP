@@ -10,26 +10,29 @@ PBS='/mnt/ivanir/Feline2023/ParseBS'
 PBS2='/mnt/hanna/synaptogenesis'
 
 cd $PBS2/newvolume
-split-pipe \
+nohup split-pipe \
 --mode mkref \
 --genome_name hg38 \
 --fasta $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa \
 --genes $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.108.gtf \
---output_dir $PBS2/newvolume/genomes/hg38_noGFP
+--output_dir $PBS2/newvolume/genomes/hg38_noGFP &
+[1] 47621
 
-split-pipe \
+nohup split-pipe \
 --mode mkref \
 --genome_name mm10 \
 --fasta $PBS2/newvolume/genomes/Mus_musculus.GRCm39.dna.primary_assembly.fa \
 --genes $PBS2/newvolume/genomes/Mus_musculus.GRCm39.108.gtf \
---output_dir $PBS2/newvolume/genomes/mm10_noGFP
+--output_dir $PBS2/newvolume/genomes/mm10_noGFP &
+[2] 47797
 
-split-pipe \
+nohup split-pipe \
 --mode mkref \
 --genome_name hg38 mm10 \
 --fasta $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa $PBS2/newvolume/genomes/Mus_musculus.GRCm39.dna.primary_assembly.fa \
 --genes $PBS2/newvolume/genomes/Homo_sapiens.GRCh38.108.gtf $PBS2/newvolume/genomes/Mus_musculus.GRCm39.108.gtf \
---output_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP
+--output_dir $PBS2/newvolume/genomes/hg38_mm10_noGFP &
+[3] 47975
 
 #cd $PBS/newvolume/expdata/
 cat SLX-22602.DNAA007.HGMLNDMXY.s_1.r_1.fq.gz SLX-22602.DNAA007.HGMLNDMXY.s_2.r_1.fq.gz > SLX-22602.tmp.r_1.fq.gz
