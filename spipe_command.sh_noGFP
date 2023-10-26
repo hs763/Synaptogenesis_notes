@@ -8,6 +8,7 @@ cd /mnt/hanna/synaptogenesis/newvolume
 
 PBS='/mnt/ivanir/Feline2023/ParseBS'
 PBS2='/mnt/hanna/synaptogenesis'
+PATH=/share/miniconda/bin:/share/miniconda/envs/spipe/bin:$PATH
 
 cd $PBS2/newvolume
 nohup split-pipe \
@@ -61,26 +62,6 @@ nohup ./demultiplexer.rhel/demuxFQ \
     #SLX-22602.r_2.fq.gz &
     
 rm SLX-22602.r_1.fq.gz SLX-22602.r_2.fq.gz
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##########MOJE####################
-
-
 
 
 # Pipeline running
