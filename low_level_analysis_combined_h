@@ -1,18 +1,24 @@
-library(scuttle)
-library(scran)
-library(irlba)
-library(Rtsne)
+cd /data2/hanna/synaptogenesis/newvolume
+singularity build qc_cell.sif docker://swingett/qc_cell
+singularity shell --bind /data2:/mnt qc_cell.sif
+cd  /mnt/hanna/synaptogenesis/newvolume
+
 library(Matrix)
 library(ggplot2)
-library(biomaRt)
 library(viridisLite)
+library(irlba)
+library(Rtsne)
 library(viridis)
+
+library(scuttle)
+library(scran)
+library(biomaRt)
 library(scDblFinder)
 
 
 
-path2data   <- '/data2/hanna/synaptogenesis/newvolume/analysis/combined_h/all-well/DGE_unfiltered'
-sample_info <- read.table('/data2/ivanir/Feline2023/ParseBS/newvolume/analysis/sample_info.tab',
+path2data   <- '/mnt/hanna/synaptogenesis/newvolume/analysis/combined_h/all-well/DGE_unfiltered'
+sample_info <- read.table('/mnt/ivanir/Feline2023/ParseBS/newvolume/analysis/sample_info.tab',
   sep = "\t", header = TRUE)
 
 ###
@@ -20,27 +26,39 @@ counts    <- t(readMM(paste0(path2data, "/DGE.mtx")))
 genes     <- read.csv(paste0(path2data, "/all_genes.csv"))
 metadata  <- read.csv(paste0(path2data, "/cell_metadata.csv"))
 
+dim(metadata)
+[1] 2214461      12
+dim(counts)
+[1]   62704 2214461
+
 lib.sizes <- colSums(counts)
 ngenes    <- colSums(counts > 0)
 
 genes_human <- genes[genes$genome == "hg38",]
-
 
 counts   <- counts[,ngenes > 400 & lib.sizes > 500]
 metadata <- metadata[ngenes > 400 & lib.sizes > 500,]
 lib.sizes <- colSums(counts)
 ngenes    <- colSums(counts > 0)
 
+dim(metadata)
+#56066    12
+dim(counts)
+#62704 56066
 
 counts   <- counts[,ngenes/lib.sizes < 0.9]
 metadata <- metadata[ngenes/lib.sizes < 0.9,]
 lib.sizes <- colSums(counts)
 ngenes    <- colSums(counts > 0)
 
+dim(counts)
+#62704 56018
+dim(metadata)
+#56018    12
+
 sample_bc1_well <- rep(NA, nrow(metadata))        
 sample_number   <- rep(NA, nrow(metadata))
 sample_name    <- rep(NA, nrow(metadata))
-
 
 sample_info$H_day <- sample_info$H_Timepoint 
 sample_info$H_day <- gsub("55\\+","",sample_info$H_day)
@@ -61,13 +79,15 @@ for (i in 1:length(samples)){
   sample_name[metadata$bc1_well %in% unlist(strsplit(samples[i],split=","))]     <- sample_info$Sample_name_H[i]
 }
 
+
+
 submeta <- data.frame(rlist::list.rbind(strsplit(sample_name, split="_")))
 colnames(submeta) <- c("batch", "day", "replicate")
 submeta$day <- gsub("d","",submeta$day)
 
 metadata <- data.frame(cbind(metadata, lib.sizes, sample_number, sample_bc1_well, sample_name, submeta))
 plot_df <- metadata
-setwd('/data2/hanna/synaptogenesis/newvolume/analysis/QC_H')
+setwd('/data2/hanna/synaptogenesis/newvolume/analysis3/QC_H')
 
 ensembl <- useEnsembl(biomart = "ensembl",  dataset = "hsapiens_gene_ensembl",mirror = "useast")
 gene_map  <- getBM(attributes=c("ensembl_gene_id", "hgnc_symbol", "chromosome_name"),
@@ -75,7 +95,7 @@ gene_map  <- getBM(attributes=c("ensembl_gene_id", "hgnc_symbol", "chromosome_na
   
 mt.index    <- gene_map$chromosome_name == "MT"
 mt.counts   <- counts[which(genes$gene_name %in% gene_map$hgnc_symbol[mt.index]), ]
-mt.count <- solSums(mt.counts)
+mt.count <- colSums(mt.counts)
 mt.fraction <- mt.count/lib.sizes
 
 
@@ -124,7 +144,19 @@ pca    <- prcomp_irlba(t(logcounts(sce_filt[hvgs,])), n = 30)
 rownames(pca$x) <- colnames(sce_filt)
 tsne <- Rtsne(pca$x, pca = FALSE, check_duplicates = FALSE, num_threads=30)
 
-#
+#singlet doublet 
+#  51892    4072
+
+
+saveRDS(counts, file = "counts.rds")
+saveRDS(metadata, file = "metadata.rds")
+saveRDS(sce, file = "sce.rds")
+saveRDS(clusts, file = "clusts.rds")
+saveRDS(sce_filt, file = "sce_filt.rds")
+saveRDS(decomp, file = "decomp.rds")
+saveRDS(hvgs, file = "hvgs.rds")
+saveRDS(tsne, file = "tsne.rds")
+
 
 library(umap)
 library(reticulate)
